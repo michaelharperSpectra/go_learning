@@ -1,42 +1,42 @@
 package main
 
 import (
-    "flag"
 	"bufio"
+	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 	"log"
-	"encoding/csv"
 	"os"
 )
 
-func main(){
+func main() {
 
 	wordPtr := flag.String("filename", "problems.csv", "the quiz to run")
-	
+
 	csvFile, _ := os.Open(*wordPtr)
-   reader := csv.NewReader(bufio.NewReader(csvFile))
-   var totalquestions = 0
-   var correct = 0
-   var answer = ""
-   for {
+	reader := csv.NewReader(bufio.NewReader(csvFile))
+	var totalquestions = 0
+	var correct = 0
+	var answer = ""
+	for {
 		record, err := reader.Read()
-	    
+
 		if err == io.EOF {
 			break
 		}
-		
-		if err != nil{
+
+		if err != nil {
 			log.Fatal(err)
 		}
 		totalquestions++
-		fmt.Printf(record[0]+ " = ")
+		fmt.Printf(record[0] + " = ")
 		fmt.Scanln(&answer)
-		
-		if(answer == record[1]){
+
+		if answer == record[1] {
 			correct++
 		}
-   }
-   fmt.Println(totalquestions)
-   fmt.Println(correct)
+	}
+	fmt.Println(totalquestions)
+	fmt.Println(correct)
 }
