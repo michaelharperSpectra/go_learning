@@ -60,7 +60,7 @@ func parseYaml(yml []byte) ([]YamlFormatData, error) {
 	if err != nil {
 		return nil, err
 	}
-	return data, nill
+	return data, nil
 }
 
 func buildMap(values []YamlFormatData) map[string]string {
