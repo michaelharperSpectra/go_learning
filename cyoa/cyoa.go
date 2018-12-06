@@ -2,56 +2,56 @@ package main
 
 import (
 	"encoding/json"
-	"net/http"
-	"html/template"
-	"os"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
+	"net/http"
+	"os"
 )
 
-
-type Entry struct{
-	Title string `json:"title"`
-	Story []string `json:"story"`
+type Entry struct {
+	Title   string   `json:"title"`
+	Story   []string `json:"story"`
 	Options []struct {
 		Text string `json:"text"`
-		Arc string `json:"arc"`
+		Arc  string `json:"arc"`
 	}
 }
 
-func HTMLHandler(json map[string]*Entry , key string) http.HandlerFunc {
+func HTMLHandler(json map[string]*Entry, key string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        w.Header().Add("Content Type", "text/html")
+		w.Header().Add("Content Type", "text/html")
 		tmpl := template.Must(template.ParseFiles("bookpage.html"))
 		fmt.Println(r.URL.Path)
-		if r.URL.Path[1:] == ""
+		if r.URL.Path[1:] == "" {
 			r.URL.Path = key
+		}
 		if val, ok := json[r.URL.Path[1:]]; ok {
 			tmpl.Execute(w, val)
-		} else{
+		} else {
 			handler := http.NotFoundHandler()
-			handler.ServeHTTP(w,r)
+			handler.ServeHTTP(w, r)
 		}
-	    
+
 	})
 }
 
 func main() {
 	story := make(map[string]*Entry)
-	
+
 	jsonFile, err := os.Open("gopher.json")
-	
+
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer jsonFile.Close()
-	
+
 	byteValue, _ := ioutil.ReadAll(jsonFile)
-	
+
 	error := json.Unmarshal([]byte(byteValue), &story)
-	
-	if error != nil{
+
+	if error != nil {
 		fmt.Println(error)
 	}
 	htmlHander := HTMLHandler(story, "intro")
