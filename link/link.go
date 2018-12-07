@@ -1,7 +1,6 @@
 package link
 
 import (
-	"fmt"
 	"io"
 	"os"
 
@@ -16,7 +15,7 @@ func ParseForALinks(filename string) map[string][]string {
 	var r io.Reader
 	r, err := os.Open(filename)
 	if err != nil {
-		fmt.Println(err)
+		return nil
 	}
 	z := html.NewTokenizer(r)
 
@@ -51,8 +50,6 @@ func ParseForALinks(filename string) map[string][]string {
 					}
 				} else {
 					returnval[currentlink] = allText
-					fmt.Println(currentlink)
-					fmt.Println(returnval[currentlink])
 					isInsideA = false
 					currentlink = ""
 					allText = nil
