@@ -10,6 +10,7 @@ import (
 	"os"
 )
 
+// Entry represents one of the entries in our json
 type Entry struct {
 	Title   string   `json:"title"`
 	Story   []string `json:"story"`
@@ -19,6 +20,8 @@ type Entry struct {
 	}
 }
 
+// HTMLHandler this function serves up the appropriate json object inside
+// a templated html page
 func HTMLHandler(json map[string]*Entry, key string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content Type", "text/html")
