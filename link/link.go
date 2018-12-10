@@ -1,8 +1,11 @@
 package link
 
 import (
+	"fmt"
 	"io"
+	"net/http"
 	"os"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -12,12 +15,25 @@ import (
 //  returns map of the href value to all text stored inside <a></a> tags
 //  returns nil if invalid html
 func ParseForALinks(filename string) map[string][]string {
-	var r io.Reader
-	r, err := os.Open(filename)
-	if err != nil {
-		return nil
+	var z *html.Tokenizer
+	if strings.Contains(filename, ".html") {
+		var r io.Reader
+		r, err := os.Open(filename)
+		if err != nil {
+			fmt.Println(err)
+			return nil
+		}
+		z = html.NewTokenizer(r)
+	} else {
+		resp, err := http.Get(filename)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer resp.Body.Close()
+
+		z = html.NewTokenizer(resp.Body)
 	}
-	z := html.NewTokenizer(r)
 
 	var isInsideA bool
 	var currentlink string
