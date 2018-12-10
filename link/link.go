@@ -61,7 +61,9 @@ func ParseForALinks(filename string) map[string][]string {
 					isInsideA = true
 					for _, attr := range token.Attr {
 						if attr.Key == "href" {
-							currentlink = attr.Val
+							if attr.Val != "" {
+								currentlink = attr.Val
+							}
 						}
 					}
 				} else {
