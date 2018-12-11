@@ -1,0 +1,75 @@
+// Copyright © 2018 NAME HERE <EMAIL ADDRESS>
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package cmd
+
+import (
+	"database/sql"
+	"fmt"
+
+	_ "github.com/go-sql-driver/mysql" //used for mysql driver
+	"github.com/spf13/cobra"
+)
+
+// listCmd represents the list command
+var listCmd = &cobra.Command{
+	Use:   "list",
+	Short: "list out all current activities TODO",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		db, err := sql.Open("mysql", "testuser:pass1234@/TODO")
+		if err != nil {
+			panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
+		}
+		defer db.Close()
+
+		// Prepare statement for reading data
+		stmtOut, err := db.Prepare("SELECT item FROM task")
+		if err != nil {
+			panic(err.Error()) // proper error handling instead of panic in your app
+		}
+		defer stmtOut.Close()
+
+		results, err := stmtOut.Query()
+		if err != nil {
+			panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
+		}
+
+		var num = 1
+		for results.Next() {
+			var text string
+			err = results.Scan(&text)
+			if err != nil {
+				panic(err.Error())
+			}
+			s := fmt.Sprintf("%d. %s", num, text)
+			fmt.Println(s)
+			num++
+		}
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(listCmd)
+
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
